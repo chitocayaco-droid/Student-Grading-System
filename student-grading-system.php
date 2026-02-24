@@ -1,258 +1,217 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Grading System</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+<?php
+class Database {
+    private $host = "localhost";
+    private $db_name = "student_grading_system";
+    private $username = "root";
+    private $password = "";
+    public $conn;
+
+    public function getConnection() {
+        $this->conn = null;
+        try {
+            $this->conn = new PDO(
+                "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
+                $this->username,
+                $this->password
+            );
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn->exec("set names utf8");
+        } catch(PDOException $exception) {
+            echo "Connection error: " . $exception->getMessage();
         }
-        
-        body {
-            background-color: #f5f5f5;
-            padding: 20px;
+        return $this->conn;
+    }
+}
+?><?php
+class Student {
+    private $conn;
+    private $table_name = "students";
+
+    public $student_id;
+    public $student_number;
+    public $first_name;
+    public $last_name;
+    public $email;
+    public $phone;
+    public $address;
+    public $enrollment_date;
+    public $status;
+
+    public function __construct($db) {
+        $this->conn = $db;
+    }
+
+    // Create student
+    public function create() {
+        $query = "INSERT INTO " . $this->table_name . "
+                  SET student_number=:student_number,
+                      first_name=:first_name,
+                      last_name=:last_name,
+                      email=:email,
+                      phone=:phone,
+                      address=:address,
+                      enrollment_date=:enrollment_date,
+                      status=:status";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Sanitize inputs
+        $this->student_number = htmlspecialchars(strip_tags($this->student_number));
+        $this->first_name = htmlspecialchars(strip_tags($this->first_name));
+        $this->last_name = htmlspecialchars(strip_tags($this->last_name));
+        $this->email = htmlspecialchars(strip_tags($this->email));
+        $this->phone = htmlspecialchars(strip_tags($this->phone));
+        $this->address = htmlspecialchars(strip_tags($this->address));
+        $this->enrollment_date = htmlspecialchars(strip_tags($this->enrollment_date));
+        $this->status = htmlspecialchars(strip_tags($this->status));
+
+        // Bind values
+        $stmt->bindParam(":student_number", $this->student_number);
+        $stmt->bindParam(":first_name", $this->first_name);
+        $stmt->bindParam(":last_name", $this->last_name);
+        $stmt->bindParam(":email", $this->email);
+        $stmt->bindParam(":phone", $this->phone);
+        $stmt->bindParam(":address", $this->address);
+        $stmt->bindParam(":enrollment_date", $this->enrollment_date);
+        $stmt->bindParam(":status", $this->status);
+
+        if($stmt->execute()) {
+            return true;
         }
+        return false;
+    }
+
+    // Read all students
+    public function read() {
+        $query = "SELECT * FROM " . $this->table_name . " ORDER BY last_name ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    // Read single student
+    public function readOne() {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE student_id = ? LIMIT 0,1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $this->student_id);
+        $stmt->execute();
         
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if($row) {
+            $this->student_number = $row['student_number'];
+            $this->first_name = $row['first_name'];
+            $this->last_name = $row['last_name'];
+            $this->email = $row['email'];
+            $this->phone = $row['phone'];
+            $this->address = $row['address'];
+            $this->enrollment_date = $row['enrollment_date'];
+            $this->status = $row['status'];
         }
-        
-        h1, h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
+    }
+
+    // Update student
+    public function update() {
+        $query = "UPDATE " . $this->table_name . "
+                  SET first_name=:first_name,
+                      last_name=:last_name,
+                      email=:email,
+                      phone=:phone,
+                      address=:address,
+                      status=:status
+                  WHERE student_id=:student_id";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Sanitize
+        $this->first_name = htmlspecialchars(strip_tags($this->first_name));
+        $this->last_name = htmlspecialchars(strip_tags($this->last_name));
+        $this->email = htmlspecialchars(strip_tags($this->email));
+        $this->phone = htmlspecialchars(strip_tags($this->phone));
+        $this->address = htmlspecialchars(strip_tags($this->address));
+        $this->status = htmlspecialchars(strip_tags($this->status));
+        $this->student_id = htmlspecialchars(strip_tags($this->student_id));
+
+        // Bind
+        $stmt->bindParam(":first_name", $this->first_name);
+        $stmt->bindParam(":last_name", $this->last_name);
+        $stmt->bindParam(":email", $this->email);
+        $stmt->bindParam(":phone", $this->phone);
+        $stmt->bindParam(":address", $this->address);
+        $stmt->bindParam(":status", $this->status);
+        $stmt->bindParam(":student_id", $this->student_id);
+
+        if($stmt->execute()) {
+            return true;
         }
-        
-        .form-group {
-            margin-bottom: 15px;
+        return false;
+    }
+
+    // Delete student
+    public function delete() {
+        $query = "DELETE FROM " . $this->table_name . " WHERE student_id = ?";
+        $stmt = $this->conn->prepare($query);
+        $this->student_id = htmlspecialchars(strip_tags($this->student_id));
+        $stmt->bindParam(1, $this->student_id);
+
+        if($stmt->execute()) {
+            return true;
         }
+        return false;
+    }
+
+    // Get student's GPA
+    public function getGPA() {
+        $query = "SELECT AVG(fg.grade_point) as gpa
+                  FROM final_grades fg
+                  JOIN enrollments e ON fg.enrollment_id = e.enrollment_id
+                  WHERE e.student_id = :student_id";
         
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":student_id", $this->student_id);
+        $stmt->execute();
         
-        input[type="text"],
-        input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['gpa'] ? round($row['gpa'], 2) : 0;
+    }
+
+    // Get enrolled subjects
+    public function getEnrolledSubjects() {
+        $query = "SELECT s.*, e.enrollment_id, e.academic_year, e.semester,
+                         t.first_name as teacher_first, t.last_name as teacher_last,
+                         fg.letter_grade, fg.grade_point
+                  FROM enrollments e
+                  JOIN subjects s ON e.subject_id = s.subject_id
+                  LEFT JOIN teachers t ON e.teacher_id = t.teacher_id
+                  LEFT JOIN final_grades fg ON e.enrollment_id = fg.enrollment_id
+                  WHERE e.student_id = :student_id
+                  ORDER BY e.academic_year DESC, e.semester ASC";
         
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":student_id", $this->student_id);
+        $stmt->execute();
         
-        button:hover {
-            background-color: #2980b9;
-        }
+        return $stmt;
+    }
+
+    // Search students
+    public function search($keywords) {
+        $query = "SELECT * FROM " . $this->table_name . "
+                  WHERE first_name LIKE ? OR last_name LIKE ? OR student_number LIKE ? OR email LIKE ?
+                  ORDER BY last_name ASC";
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+        $keywords = htmlspecialchars(strip_tags($keywords));
+        $keywords = "%{$keywords}%";
         
-        table, th, td {
-            border: 1px solid #ddd;
-        }
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $keywords);
+        $stmt->bindParam(2, $keywords);
+        $stmt->bindParam(3, $keywords);
+        $stmt->bindParam(4, $keywords);
         
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        
-        th {
-            background-color: #f2f2f2;
-        }
-        
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        
-        .grade-A { background-color: #d4edda; }
-        .grade-B { background-color: #d1ecf1; }
-        .grade-C { background-color: #fff3cd; }
-        .grade-D { background-color: #f8d7da; }
-        .grade-F { background-color: #f8d7da; }
-        
-        .alert {
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>School Grading System</h1>
-        
-        <?php
-        // Define grading scale
-        $grading_scale = [
-            'A' => [90, 100],
-            'B' => [80, 89],
-            'C' => [70, 79],
-            'D' => [60, 69],
-            'F' => [0, 59]
-        ];
-        
-        // Function to calculate grade based on score
-        function calculateGrade($score, $grading_scale) {
-            foreach ($grading_scale as $grade => $range) {
-                if ($score >= $range[0] && $score <= $range[1]) {
-                    return $grade;
-                }
-            }
-            return 'F';
-        }
-        
-        // Initialize variables
-        $students = [];
-        $message = '';
-        $message_type = '';
-        
-        // Check if form is submitted
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['add_student'])) {
-                // Validate inputs
-                $name = trim($_POST['name']);
-                $math = floatval($_POST['math']);
-                $science = floatval($_POST['science']);
-                $english = floatval($_POST['english']);
-                $history = floatval($_POST['history']);
-                
-                if (!empty($name) && $math >= 0 && $math <= 100 && 
-                    $science >= 0 && $science <= 100 && 
-                    $english >= 0 && $english <= 100 && 
-                    $history >= 0 && $history <= 100) {
-                    
-                    // Calculate average and grade
-                    $average = ($math + $science + $english + $history) / 4;
-                    $grade = calculateGrade($average, $grading_scale);
-                    
-                    // Add to students array
-                    $students = isset($_POST['students']) ? json_decode($_POST['students'], true) : [];
-                    $students[] = [
-                        'name' => $name,
-                        'math' => $math,
-                        'science' => $science,
-                        'english' => $english,
-                        'history' => $history,
-                        'average' => round($average, 2),
-                        'grade' => $grade
-                    ];
-                    
-                    $message = 'Student added successfully!';
-                    $message_type = 'success';
-                } else {
-                    $message = 'Please fill all fields correctly. Scores must be between 0 and 100.';
-                    $message_type = 'error';
-                }
-            } elseif (isset($_POST['clear_all'])) {
-                $students = [];
-                $message = 'All records cleared.';
-                $message_type = 'success';
-            }
-        }
-        ?>
-        
-        <?php if (!empty($message)): ?>
-            <div class="alert alert-<?php echo $message_type; ?>">
-                <?php echo $message; ?>
-            </div>
-        <?php endif; ?>
-        
-        <h2>Add New Student</h2>
-        <form method="POST">
-            <div class="form-group">
-                <label for="name">Student Name:</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="math">Math Score (0-100):</label>
-                <input type="number" id="math" name="math" min="0" max="100" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="science">Science Score (0-100):</label>
-                <input type="number" id="science" name="science" min="0" max="100" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="english">English Score (0-100):</label>
-                <input type="number" id="english" name="english" min="0" max="100" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="history">History Score (0-100):</label>
-                <input type="number" id="history" name="history" min="0" max="100" required>
-            </div>
-            
-            <input type="hidden" name="students" value="<?php echo isset($students) ? htmlspecialchars(json_encode($students)) : ''; ?>">
-            
-            <button type="submit" name="add_student">Add Student</button>
-            <button type="submit" name="clear_all" style="background-color: #e74c3c;">Clear All</button>
-        </form>
-        
-        <?php if (!empty($students)): ?>
-            <h2>Student Grades</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Math</th>
-                        <th>Science</th>
-                        <th>English</th>
-                        <th>History</th>
-                        <th>Average</th>
-                        <th>Grade</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($students as $student): ?>
-                        <tr class="grade-<?php echo $student['grade']; ?>">
-                            <td><?php echo htmlspecialchars($student['name']); ?></td>
-                            <td><?php echo $student['math']; ?></td>
-                            <td><?php echo $student['science']; ?></td>
-                            <td><?php echo $student['english']; ?></td>
-                            <td><?php echo $student['history']; ?></td>
-                            <td><?php echo $student['average']; ?></td>
-                            <td><?php echo $student['grade']; ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            
-            <div style="margin-top: 20px;">
-                <h3>Grading Scale:</h3>
-                <p>A: 90-100, B: 80-89, C: 70-79, D: 60-69, F:
+        $stmt->execute();
+        return $stmt;
+    }
+}
+?>
