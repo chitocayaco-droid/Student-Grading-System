@@ -1,6 +1,9 @@
 <?php
 require_once 'config/database.php';
 
+$page_title = "Manage Courses"; // Optional
+include 'includes/header.php';
+
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header("Location: index.php");
     exit();
@@ -216,19 +219,6 @@ $teachers = $stmt->fetchAll();
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="nav">
-            <h2>Student Grading System</h2>
-            <div class="nav-links">
-                <a href="dashboard.php">Dashboard</a>
-                <a href="manage_students.php">Students</a>
-                <a href="manage_teachers.php">Teachers</a>
-                <a href="manage_courses.php">Courses</a>
-                <a href="logout.php" class="logout">Logout</a>
-            </div>
-        </div>
-    </div>
-    
     <div class="container">
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">

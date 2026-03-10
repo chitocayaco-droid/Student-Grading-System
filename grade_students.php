@@ -1,6 +1,9 @@
 <?php
 require_once 'config/database.php';
 
+$page_title = "Grade Students"; // Optional
+include 'includes/header.php';
+
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'teacher') {
     header("Location: index.php");
     exit();
@@ -244,18 +247,6 @@ $selected_course = isset($_GET['course_id']) ? $_GET['course_id'] : (isset($_POS
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="nav">
-            <h2>Student Grading System</h2>
-            <div class="nav-links">
-                <a href="dashboard.php">Dashboard</a>
-                <a href="my_courses.php">My Courses</a>
-                <a href="grade_students.php">Grade Students</a>
-                <a href="logout.php" class="logout">Logout</a>
-            </div>
-        </div>
-    </div>
-    
     <div class="container">
         <div class="card">
             <h2>Grade Students</h2>

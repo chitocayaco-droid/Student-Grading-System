@@ -1,6 +1,13 @@
 <?php
 require_once 'config/database.php';
+require_once 'includes/image_upload.php';
 
+$page_title = "Manage Teachers"; // Optional
+include 'includes/header.php';
+
+// ... (rest of the PHP code, similar to students but with teacher fields)
+
+// In the POST handling for add/edit, add image upload similar to students
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
     header("Location: index.php");
     exit();
@@ -230,19 +237,6 @@ $teachers = $stmt->fetchAll();
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="nav">
-            <h2>Student Grading System</h2>
-            <div class="nav-links">
-                <a href="dashboard.php">Dashboard</a>
-                <a href="manage_students.php">Students</a>
-                <a href="manage_teachers.php">Teachers</a>
-                <a href="manage_courses.php">Courses</a>
-                <a href="logout.php" class="logout">Logout</a>
-            </div>
-        </div>
-    </div>
-    
     <div class="container">
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">

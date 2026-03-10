@@ -1,6 +1,9 @@
 <?php
 require_once 'config/database.php';
 
+$page_title = "My Grades"; // Optional
+include 'includes/header.php';
+
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'student') {
     header("Location: index.php");
     exit();
@@ -225,17 +228,6 @@ function calculateGradePoint($percentage) {
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="nav">
-            <h2>Student Grading System</h2>
-            <div class="nav-links">
-                <a href="dashboard.php">Dashboard</a>
-                <a href="my_grades.php">My Grades</a>
-                <a href="logout.php" class="logout">Logout</a>
-            </div>
-        </div>
-    </div>
-    
     <div class="container">
         <?php if (empty($courses)): ?>
             <div class="card">
