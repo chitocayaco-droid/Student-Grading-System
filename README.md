@@ -105,16 +105,5 @@ INSERT INTO enrollments (student_id, course_id, semester, year) VALUES
 
 —--------------------- (inside grading-system)
 
--- Add profile_image column to students table
-ALTER TABLE students ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL AFTER address;
-
--- Add profile_image column to teachers table
-ALTER TABLE teachers ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL AFTER department;
-
--- Create uploads directory structure (you'll need to create this folder manually)
--- The code will create these folders automatically if they don't exist
-
-—----------
-
 ALTER TABLE students ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL AFTER address;
 ALTER TABLE teachers ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL AFTER department;
