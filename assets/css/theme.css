@@ -1,0 +1,367 @@
+/* ============================================
+   BETHEL GRADING SYSTEM - COLOR THEME
+   Light Blue & Light Yellow Color Scheme
+   ============================================ */
+
+:root {
+    /* Light Blue Palette */
+    --light-blue-darkest: #3d55a5;
+    --light-blue-dark: #2285b3;
+    --light-blue: #4590e6;
+    --light-blue-light: #7dd3fc;
+    --light-blue-lighter: #bae6fd;
+    --light-blue-lightest: #e0f2fe;
+    --light-blue-bg: #f0f9ff;
+    
+    /* Light Yellow Palette */
+    --yellow-light: #fef9c3;
+    --yellow-soft: #fef08a;
+    --yellow-warm: #fde047;
+    --yellow-accent: #eab308;
+    
+    /* Neutral Colors */
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    
+    /* Success/Error Colors */
+    --success: #10b981;
+    --error: #ef4444;
+    --warning: #f59e0b;
+}
+
+/* Global Styles */
+body {
+    background: var(--gray-50);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header Navigation */
+.header {
+    background: linear-gradient(135deg, var(--light-blue) 0%, var(--light-blue-dark) 100%);
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+}
+
+.logo-text {
+    color: white !important;
+}
+
+.logo-text span {
+    color: var(--yellow-warm) !important;
+}
+
+.nav-links a {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.nav-links a:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.nav-links a.active {
+    background: var(--yellow-warm);
+    color: var(--light-blue-darkest);
+}
+
+.nav-links a.active:hover {
+    background: var(--yellow-soft);
+}
+
+/* User Menu */
+.user-name {
+    color: white;
+}
+
+.user-role {
+    color: var(--yellow-soft);
+}
+
+.user-avatar {
+    background: var(--yellow-warm);
+    color: var(--light-blue-darkest);
+}
+
+.logout-btn {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+}
+
+.logout-btn:hover {
+    background: var(--error) !important;
+}
+
+/* Buttons */
+.btn {
+    background: var(--light-blue);
+    transition: all 0.3s;
+}
+
+.btn:hover {
+    background: var(--light-blue-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+}
+
+.btn-success {
+    background: var(--light-blue);
+}
+
+.btn-success:hover {
+    background: var(--light-blue-dark);
+}
+
+.btn-danger {
+    background: var(--error);
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+.btn-warning {
+    background: var(--yellow-warm);
+    color: var(--light-blue-darkest);
+}
+
+.btn-warning:hover {
+    background: var(--yellow-soft);
+    color: var(--light-blue-darkest);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--light-blue);
+    color: var(--light-blue);
+}
+
+.btn-outline:hover {
+    background: var(--light-blue);
+    color: white;
+}
+
+/* Cards */
+.card {
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    transition: all 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+    color: var(--light-blue-darkest);
+    border-bottom-color: var(--gray-200);
+}
+
+/* Stats Cards */
+.stat-number {
+    color: var(--light-blue);
+}
+
+/* Welcome Box */
+.welcome-box {
+    background: linear-gradient(135deg, var(--light-blue) 0%, var(--light-blue-dark) 100%);
+    box-shadow: 0 10px 30px rgba(56, 189, 248, 0.25);
+}
+
+/* Table Headers */
+th {
+    background: var(--light-blue);
+    color: white;
+}
+
+tr:hover {
+    background: var(--light-blue-lightest);
+}
+
+/* Progress Bar */
+.percentage-fill {
+    background: var(--light-blue);
+}
+
+/* GPA Box */
+.gpa-box {
+    background: linear-gradient(135deg, var(--light-blue) 0%, var(--light-blue-dark) 100%);
+}
+
+/* Grade Colors */
+.grade-a { background: var(--success); color: white; }
+.grade-b { background: var(--light-blue); color: white; }
+.grade-c { background: var(--yellow-warm); color: var(--light-blue-darkest); }
+.grade-d { background: var(--warning); color: white; }
+.grade-f { background: var(--error); color: white; }
+
+/* Assignment Type Badges */
+.type-quiz { background: var(--light-blue-light); }
+.type-midterm { background: var(--yellow-warm); color: var(--light-blue-darkest); }
+.type-final { background: var(--light-blue-dark); }
+.type-project { background: var(--light-blue); }
+.type-homework { background: var(--light-blue-lighter); color: var(--light-blue-darkest); }
+
+/* Modal */
+.modal-content {
+    border-radius: 12px;
+}
+
+/* Forms */
+.form-group input:focus, 
+.form-group textarea:focus, 
+.form-group select:focus {
+    border-color: var(--light-blue);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+/* Login Page */
+.login-container {
+    border-radius: 20px;
+}
+
+.login-container button {
+    background: linear-gradient(135deg, var(--light-blue) 0%, var(--light-blue-dark) 100%);
+}
+
+.login-container button:hover {
+    box-shadow: 0 10px 20px rgba(56, 189, 248, 0.4);
+}
+
+/* Demo Cards */
+.demo-card.admin {
+    border-left: 4px solid var(--light-blue-dark);
+}
+
+.demo-card.teacher {
+    border-left: 4px solid var(--light-blue);
+}
+
+.demo-card.student {
+    border-left: 4px solid var(--yellow-warm);
+}
+
+.demo-card:hover {
+    border-color: var(--light-blue);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile Page */
+.profile-header {
+    background: linear-gradient(135deg, var(--light-blue) 0%, var(--light-blue-dark) 100%);
+}
+
+.profile-image {
+    border-color: var(--yellow-warm);
+}
+
+.edit-image-btn {
+    background: var(--yellow-warm);
+    color: var(--light-blue-darkest);
+}
+
+.edit-image-btn:hover {
+    background: var(--yellow-soft);
+}
+
+/* Info Sections */
+.info-section {
+    background: var(--light-blue-lightest);
+    border-color: var(--light-blue-lighter);
+}
+
+.info-section h3 {
+    color: var(--light-blue-darkest);
+    border-bottom-color: var(--light-blue-lighter);
+}
+
+/* Stat Boxes */
+.stat-box {
+    background: white;
+    border-color: var(--gray-200);
+}
+
+.stat-box:hover {
+    border-color: var(--light-blue-light);
+    box-shadow: 0 5px 15px rgba(56, 189, 248, 0.1);
+}
+
+.stat-number {
+    color: var(--light-blue);
+}
+
+/* Badges */
+.badge-admin {
+    background: var(--light-blue-dark);
+    color: white;
+}
+
+.badge-teacher {
+    background: var(--light-blue);
+    color: white;
+}
+
+.badge-student {
+    background: var(--light-blue-light);
+    color: white;
+}
+
+/* Success/Error Messages */
+.success {
+    background: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid var(--success);
+}
+
+.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid var(--error);
+}
+
+/* Pagination */
+.pagination a {
+    color: var(--light-blue);
+}
+
+.pagination a:hover {
+    background: var(--light-blue-lightest);
+}
+
+.pagination .active {
+    background: var(--light-blue);
+    color: white;
+}
+
+/* Footer */
+footer {
+    background: var(--gray-100);
+    border-top-color: var(--gray-200);
+    color: var(--gray-600);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--light-blue-light);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--light-blue);
+}

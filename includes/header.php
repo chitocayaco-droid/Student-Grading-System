@@ -16,7 +16,8 @@ function isActive($page) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?>Student Grading System</title>
+    <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?>Bethel Grading System</title>
+    <link rel="stylesheet" href="assets/css/theme.css">
     <style>
         * {
             margin: 0;
@@ -25,15 +26,13 @@ function isActive($page) {
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f7fafc;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
         .header {
-            background: white;
+            background: linear-gradient(135deg, #002366 0%, #0056b3 100%);
             padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -45,31 +44,37 @@ function isActive($page) {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            text-decoration: none;
         }
-        .logo-icon {
-            font-size: 28px;
+        .logo-img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
         }
         .logo-text {
             font-size: 20px;
             font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: white;
+        }
+        .logo-text span {
+            color: #fde047;
         }
         .nav-links {
             display: flex;
             align-items: center;
             gap: 5px;
+            flex-wrap: wrap;
         }
         .nav-links a {
             text-decoration: none;
-            color: #4a5568;
+            color: rgba(255, 255, 255, 0.9);
             padding: 10px 16px;
             border-radius: 8px;
             font-size: 14px;
@@ -80,15 +85,15 @@ function isActive($page) {
             gap: 6px;
         }
         .nav-links a:hover {
-            background: #edf2f7;
-            color: #2d3748;
-        }
-        .nav-links a.active {
-            background: #667eea;
+            background: rgba(255, 255, 255, 0.15);
             color: white;
         }
+        .nav-links a.active {
+            background: #fde047;
+            color: #0284c7;
+        }
         .nav-links a.active:hover {
-            background: #5a67d8;
+            background: #fef08a;
         }
         .user-menu {
             display: flex;
@@ -96,30 +101,30 @@ function isActive($page) {
             gap: 15px;
             margin-left: 10px;
             padding-left: 15px;
-            border-left: 2px solid #e2e8f0;
+            border-left: 2px solid rgba(255, 255, 255, 0.2);
         }
         .user-info {
             text-align: right;
         }
         .user-name {
             font-weight: 600;
-            color: #2d3748;
+            color: white;
             font-size: 14px;
         }
         .user-role {
             font-size: 12px;
-            color: #718096;
+            color: #fef08a;
             text-transform: capitalize;
         }
         .user-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #fde047;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #0284c7;
             font-weight: bold;
             font-size: 18px;
             cursor: pointer;
@@ -129,11 +134,12 @@ function isActive($page) {
             transform: scale(1.05);
         }
         .logout-btn {
-            background: #f56565 !important;
+            background: rgba(255, 255, 255, 0.2) !important;
             color: white !important;
         }
         .logout-btn:hover {
-            background: #e53e3e !important;
+            background: #ef4444 !important;
+            color: white !important;
         }
         .container {
             max-width: 1400px;
@@ -144,10 +150,8 @@ function isActive($page) {
         @media (max-width: 768px) {
             .nav-container {
                 flex-direction: column;
-                gap: 10px;
             }
             .nav-links {
-                flex-wrap: wrap;
                 justify-content: center;
             }
             .user-menu {
@@ -155,25 +159,32 @@ function isActive($page) {
                 padding-left: 0;
                 margin-left: 0;
             }
+            .logo-img {
+                height: 35px;
+            }
+            .logo-text {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="nav-container">
-            <div class="logo">
-                <span class="logo-icon">📚</span>
-                <span class="logo-text">GradeMaster</span>
-            </div>
+            <a href="dashboard.php" class="logo">
+                <img src="assets/logo.png" alt="Bethel Logo" class="logo-img" 
+                     onerror="this.style.display='none';">
+                <div class="logo-text">
+                    Bethel <span>Grading System</span>
+                </div>
+            </a>
             
             <div class="nav-links">
-                <!-- Dashboard Link - Common for all -->
                 <a href="dashboard.php" class="<?php echo isActive('dashboard.php'); ?>">
                     <span>📊</span> Dashboard
                 </a>
                 
                 <?php if ($role == 'admin'): ?>
-                    <!-- Admin Links -->
                     <a href="manage_students.php" class="<?php echo isActive('manage_students.php'); ?>">
                         <span>👥</span> Students
                     </a>
@@ -188,7 +199,6 @@ function isActive($page) {
                     </a>
                     
                 <?php elseif ($role == 'teacher'): ?>
-                    <!-- Teacher Links -->
                     <a href="my_courses.php" class="<?php echo isActive('my_courses.php'); ?>">
                         <span>📖</span> My Courses
                     </a>
@@ -197,13 +207,11 @@ function isActive($page) {
                     </a>
                     
                 <?php elseif ($role == 'student'): ?>
-                    <!-- Student Links -->
                     <a href="my_grades.php" class="<?php echo isActive('my_grades.php'); ?>">
                         <span>📊</span> My Grades
                     </a>
                 <?php endif; ?>
                 
-                <!-- Profile Link - Common for all -->
                 <a href="view_profile.php" class="<?php echo isActive('view_profile.php'); ?>">
                     <span>👤</span> Profile
                 </a>

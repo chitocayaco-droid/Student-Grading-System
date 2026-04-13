@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #7d7ffc 0%, #38bdf8 50%, hsla(59, 100%, 71%, 0.73) 100%);
             height: 100vh;
             display: flex;
             align-items: center;
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             padding: 20px;
         }
         .login-container {
-            background: white;
+            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
@@ -66,6 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         .logo {
             margin-bottom: 20px;
+        }
+        .logo-img {
+            max-height: 80px;
+            width: auto;
+            margin-bottom: 10px;
         }
         .logo-icon {
             font-size: 64px;
@@ -329,10 +334,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <div class="login-container">
         <div class="logo">
-            <div class="logo-icon">📚</div>
-            <div class="logo-text">GradeMaster</div>
+            <img src="assets/logo.png" alt="Bethel Logo" class="logo-img" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
+            <div class="logo-text" style="display: none;">Bethel Grading System</div>
+            <div class="logo-text-fallback" style="margin-top: 10px;">
+                <span style="font-size: 32px; font-weight: bold; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Bethel Grading System</span>
+            </div>
         </div>
-        <h2>Student Grading System</h2>
         
         <form method="POST" action="" id="loginForm">
             <div class="form-group">
