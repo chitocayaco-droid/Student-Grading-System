@@ -141,7 +141,7 @@ include 'includes/header.php';
 
 <style>
     .welcome-box {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #2d4996 0%, #2563eb 100%);
         color: white;
         padding: 40px;
         border-radius: 15px;

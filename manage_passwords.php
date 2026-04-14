@@ -111,32 +111,6 @@ $current_user = $stmt->fetch();
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f7fafc;
         }
-        .header {
-            background: white;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .nav {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .nav-links a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: #4a5568;
-            padding: 8px 12px;
-            border-radius: 5px;
-        }
-        .nav-links a:hover {
-            background: #edf2f7;
-        }
-        .nav-links a.active {
-            background: #667eea;
-            color: white;
-        }
         .container {
             max-width: 1400px;
             margin: 40px auto;

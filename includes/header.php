@@ -16,7 +16,7 @@ function isActive($page) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?>Student Grading System</title>
+    <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?>Bethel School Grading System</title>
     <style>
         * {
             margin: 0;
@@ -25,13 +25,13 @@ function isActive($page) {
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f7fafc;
+            background: #f0f4f8;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
         .header {
-            background: white;
+            background: #345dce;
             padding: 15px 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
@@ -49,18 +49,17 @@ function isActive($page) {
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
-        .logo-icon {
-            font-size: 28px;
+        .logo img {
+            height: 45px;
+            width: auto;
         }
         .logo-text {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #fbbf24;
+            letter-spacing: 0.1px;
         }
         .nav-links {
             display: flex;
@@ -69,7 +68,7 @@ function isActive($page) {
         }
         .nav-links a {
             text-decoration: none;
-            color: #4a5568;
+            color: #ffffff;
             padding: 10px 16px;
             border-radius: 8px;
             font-size: 14px;
@@ -80,15 +79,15 @@ function isActive($page) {
             gap: 6px;
         }
         .nav-links a:hover {
-            background: #edf2f7;
-            color: #2d3748;
-        }
-        .nav-links a.active {
-            background: #667eea;
+            background: #2563eb;
             color: white;
         }
+        .nav-links a.active {
+            background: #fbbf24;
+            color: #232427;
+        }
         .nav-links a.active:hover {
-            background: #5a67d8;
+            background: #f59e0b;
         }
         .user-menu {
             display: flex;
@@ -96,30 +95,30 @@ function isActive($page) {
             gap: 15px;
             margin-left: 10px;
             padding-left: 15px;
-            border-left: 2px solid #e2e8f0;
+            border-left: 2px solid #3b82f6;
         }
         .user-info {
             text-align: right;
         }
         .user-name {
             font-weight: 600;
-            color: #2d3748;
+            color: #fbbf24;
             font-size: 14px;
         }
         .user-role {
             font-size: 12px;
-            color: #718096;
+            color: #94a3b8;
             text-transform: capitalize;
         }
         .user-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #fbbf24;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #1e3a8a;
             font-weight: bold;
             font-size: 18px;
             cursor: pointer;
@@ -127,13 +126,14 @@ function isActive($page) {
         }
         .user-avatar:hover {
             transform: scale(1.05);
+            background: #f59e0b;
         }
         .logout-btn {
-            background: #f56565 !important;
+            background: #dc2626 !important;
             color: white !important;
         }
         .logout-btn:hover {
-            background: #e53e3e !important;
+            background: #b91c1c !important;
         }
         .container {
             max-width: 1400px;
@@ -155,6 +155,12 @@ function isActive($page) {
                 padding-left: 0;
                 margin-left: 0;
             }
+            .logo img {
+                height: 35px;
+            }
+            .logo-text {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -162,8 +168,22 @@ function isActive($page) {
     <div class="header">
         <div class="nav-container">
             <div class="logo">
-                <span class="logo-icon">📚</span>
-                <span class="logo-text">GradeMaster</span>
+                <?php 
+                // Check for the new transparent PNG logo
+                if (file_exists('assets/betterbethel.png')) {
+                    echo '<img src="assets/betterbethel.png" alt="Bethel School">';
+                } elseif (file_exists('betterbethel.png')) {
+                    echo '<img src="betterbethel.png" alt="Bethel School">';
+                } elseif (file_exists('assets/bethel.png')) {
+                    echo '<img src="assets/bethel.png" alt="Bethel School">';
+                } elseif (file_exists('assets/bethel.jpg')) {
+                    echo '<img src="assets/bethel.jpg" alt="Bethel School">';
+                } else {
+                    // Fallback icon if no logo found
+                    echo '<span style="font-size: 32px;">🏫</span>';
+                }
+                ?>
+                <span class="logo-text">Bethel GradeMaster</span>
             </div>
             
             <div class="nav-links">

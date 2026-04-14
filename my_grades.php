@@ -100,23 +100,6 @@ function calculateGradePoint($percentage) {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f7fafc;
         }
-        .header {
-            background: white;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .nav-links a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: #4a5568;
-        }
         .container {
             max-width: 1200px;
             margin: 40px auto;
