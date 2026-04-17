@@ -45,39 +45,31 @@ function uploadProfileImage($file, $target_dir = "uploads/profiles/") {
 }
 
 function deleteProfileImage($filename, $target_dir = "uploads/profiles/") {
-    if ($filename && file_exists($target_dir . $filename)) {
+    // Don't delete the default image
+    if ($filename && $filename != 'default.jpg' && $filename != 'default-avatar.png' && file_exists($target_dir . $filename)) {
         unlink($target_dir . $filename);
     }
 }
 
-function getProfileImageUrl($filename, $default = 'default-avatar.png') {
-    if ($filename && file_exists("uploads/profiles/" . $filename)) {
+function getProfileImageUrl($filename, $default = 'default.jpg') {
+    // If a custom filename exists and file exists, use it
+    if ($filename && !empty($filename) && file_exists("uploads/profiles/" . $filename)) {
         return "uploads/profiles/" . $filename;
     }
-    return "uploads/profiles/" . $default;
-}
-
-// Create default avatar if it doesn't exist
-function createDefaultAvatar($target_dir = "uploads/profiles/") {
-    $default_file = $target_dir . 'default-avatar.png';
     
-    if (!file_exists($default_file)) {
-        // Create a simple default avatar using GD
-        if (extension_loaded('gd')) {
-            $image = imagecreate(200, 200);
-            $bg = imagecolorallocate($image, 102, 126, 234); // #667eea
-            $text_color = imagecolorallocate($image, 255, 255, 255);
-            
-            // Draw a user icon or just a letter
-            imagestring($image, 5, 80, 90, 'User', $text_color);
-            
-            // Save the image
-            imagepng($image, $default_file);
-            imagedestroy($image);
-        }
+    // Check for default.jpg
+    if (file_exists("uploads/profiles/default.jpg")) {
+        return "uploads/profiles/default.jpg";
     }
+    
+    // Fallback to default-avatar.png if exists
+    if (file_exists("uploads/profiles/default-avatar.png")) {
+        return "uploads/profiles/default-avatar.png";
+    }
+    
+    // Ultimate fallback - return empty
+    return "uploads/profiles/default.jpg";
 }
 
-// Call this function to ensure default avatar exists
-createDefaultAvatar();
+// No need to create default avatar anymore since we have default.jpg
 ?>

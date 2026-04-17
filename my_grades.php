@@ -111,6 +111,11 @@ function calculateGradePoint($percentage) {
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             padding: 30px;
             margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0px 20px rgba(255, 216, 110, 0.6);
         }
         h2 {
             color: #2d3748;
@@ -122,6 +127,11 @@ function calculateGradePoint($percentage) {
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 30px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .course-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0px 20px rgba(255, 216, 110, 0.6);
         }
         .course-header {
             background: #edf2f7;
@@ -143,7 +153,7 @@ function calculateGradePoint($percentage) {
             font-size: 14px;
         }
         th {
-            background: #667eea;
+            background: #2563eb;
             color: white;
             padding: 10px;
             text-align: left;
@@ -153,7 +163,7 @@ function calculateGradePoint($percentage) {
             border-bottom: 1px solid #e2e8f0;
         }
         tr:hover {
-            background: #edf2f7;
+            background: hsla(54, 100%, 96%, 0.69);
         }
         .grade-summary {
             margin-top: 15px;
@@ -191,7 +201,7 @@ function calculateGradePoint($percentage) {
             color: #e53e3e !important;
         }
         .gpa-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6084e7 0%, #2563eb 100%);
             color: white;
             padding: 20px;
             border-radius: 8px;
@@ -323,3 +333,5 @@ function calculateGradePoint($percentage) {
     </div>
 </body>
 </html>
+
+<?php include 'includes/footer.php'; ?>

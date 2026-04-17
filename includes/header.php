@@ -79,7 +79,7 @@ function isActive($page) {
             gap: 6px;
         }
         .nav-links a:hover {
-            background: #2563eb;
+            background: #ffe56fa4;
             color: white;
         }
         .nav-links a.active {

@@ -45,6 +45,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_self_password']
     }
 }
 
+// Handle username change
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_username'])) {
+    $user_id = $_POST['user_id'];
+    $new_username = strtolower(trim($_POST['new_username']));
+    
+    if (strlen($new_username) < 3) {
+        $message = "Username must be at least 3 characters long!";
+        $message_type = 'error';
+    } elseif (!preg_match('/^[a-zA-Z0-9._-]+$/', $new_username)) {
+        $message = "Username can only contain letters, numbers, dots, underscores, and hyphens!";
+        $message_type = 'error';
+    } else {
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? AND id != ?");
+        $stmt->execute([$new_username, $user_id]);
+        if ($stmt->fetch()) {
+            $message = "Username already exists!";
+            $message_type = 'error';
+        } else {
+            $stmt = $pdo->prepare("UPDATE users SET username = ? WHERE id = ?");
+            $stmt->execute([$new_username, $user_id]);
+            $message = "Username updated successfully!";
+            $message_type = 'success';
+        }
+    }
+}
+
 // Handle password reset for other users
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reset_user_password'])) {
     $user_id = $_POST['user_id'];
@@ -123,6 +149,11 @@ $current_user = $stmt->fetch();
             padding: 30px;
             margin-bottom: 30px;
             border: 1px solid #e2e8f0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0px 20px rgba(255, 216, 110, 0.6);
         }
         h2 {
             color: #2d3748;
@@ -153,12 +184,12 @@ $current_user = $stmt->fetch();
         }
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
         }
         .btn {
             display: inline-block;
             padding: 12px 24px;
-            background: #667eea;
+            background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
             color: white;
             text-decoration: none;
             border-radius: 8px;
@@ -169,19 +200,22 @@ $current_user = $stmt->fetch();
             transition: background 0.3s;
         }
         .btn:hover {
-            background: #5a67d8;
+            background: #fbbf24;
+            color: #1332bd;
         }
         .btn-success {
             background: #48bb78;
         }
         .btn-success:hover {
             background: #38a169;
+            color: #ffe96d;
         }
         .btn-danger {
             background: #e53e3e;
         }
         .btn-danger:hover {
             background: #c53030;
+            color: white;
         }
         .btn-warning {
             background: #ecc94b;
@@ -189,6 +223,7 @@ $current_user = $stmt->fetch();
         }
         .btn-warning:hover {
             background: #d69e2e;
+            color: #ffef95;
         }
         .message {
             padding: 15px;
@@ -211,8 +246,8 @@ $current_user = $stmt->fetch();
             margin-top: 20px;
         }
         th {
-            background: #f7fafc;
-            color: #4a5568;
+            background: #6082e0;
+            color: #ffffff;
             padding: 15px;
             text-align: left;
             font-weight: 600;
@@ -223,7 +258,7 @@ $current_user = $stmt->fetch();
             border-bottom: 1px solid #e2e8f0;
         }
         tr:hover {
-            background: #f7fafc;
+            background: hsla(54, 100%, 96%, 0.69);
         }
         .badge {
             display: inline-block;
@@ -374,8 +409,8 @@ $current_user = $stmt->fetch();
         
         <!-- Manage Other Users' Passwords -->
         <div class="card">
-            <h3>👥 Manage User Passwords</h3>
-            <p style="color: #718096; margin-bottom: 20px;">Reset passwords for students and teachers. Default password is usually 'student123' or 'teacher123'.</p>
+            <h3>👥 Manage Usernames and Passwords</h3>
+            <p style="color: #718096; margin-bottom: 20px;">Reset passwords and change usernames for students and teachers. Default password is usually 'student123' or 'teacher123'.</p>
             
             <?php if (count($users) > 0): ?>
                 <table>
@@ -386,7 +421,8 @@ $current_user = $stmt->fetch();
                             <th>Role</th>
                             <th>ID/Identifier</th>
                             <th>Account Created</th>
-                            <th>Actions</th>
+                            <th>Passwords</th>
+                            <th>Usernames</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -425,6 +461,23 @@ $current_user = $stmt->fetch();
                                             <button type="submit" name="reset_user_password" class="btn btn-success btn-sm">Save New Password</button>
                                             <button type="button" class="btn btn-danger btn-sm" onclick="toggleResetForm(<?php echo $user['id']; ?>)">Cancel</button>
                                         </div>
+                                    </form>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm" style="background: #4299e1; color: white;" onclick="toggleUsernameForm(<?php echo $user['id']; ?>)">
+                                    Change Username
+                                </button>
+                                <div id="username-form-<?php echo $user['id']; ?>" class="password-reset-form" style="display: none;">
+                                    <form method="POST" action="">
+                                        <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                                        <div class="form-group">
+                                            <label>New Username:</label>
+                                            <input type="text" name="new_username" value="<?php echo htmlspecialchars($user['username']); ?>" 
+                                                pattern="[a-zA-Z0-9._-]{3,}" required>
+                                        </div>
+                                        <button type="submit" name="change_username" class="btn btn-success btn-sm">Save</button>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="toggleUsernameForm(<?php echo $user['id']; ?>)">Cancel</button>
                                     </form>
                                 </div>
                             </td>
@@ -556,6 +609,22 @@ $current_user = $stmt->fetch();
             
             return confirm('Are you sure you want to reset this user\'s password?');
         }
+
+        function toggleUsernameForm(userId) {
+            var form = document.getElementById('username-form-' + userId);
+            if (form.style.display === 'none' || form.style.display === '') {
+                // Hide all other username forms
+                var forms = document.getElementsByClassName('password-reset-form');
+                for (var i = 0; i < forms.length; i++) {
+                    forms[i].style.display = 'none';
+                }
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>
+
+<?php include 'includes/footer.php'; ?>

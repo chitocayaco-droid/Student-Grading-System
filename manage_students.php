@@ -50,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         
         // Edit student
+// In the edit student section, update the image handling:
         if ($_POST['action'] == 'edit' && !isset($error)) {
             $id = $_POST['id'];
             $student_id = $_POST['student_id'];
@@ -65,11 +66,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute([$id]);
             $current = $stmt->fetch();
             
-            // If new image uploaded, delete old one
-            if ($profile_image && $current['profile_image']) {
-                deleteProfileImage($current['profile_image']);
-            } elseif (!$profile_image) {
-                $profile_image = $current['profile_image']; // Keep existing image
+            // Check if delete_image flag is set
+            $delete_image = isset($_POST['delete_image']) && $_POST['delete_image'] == '1';
+            
+            if ($delete_image) {
+                // Delete the old image if it exists and is not default
+                if ($current['profile_image'] && $current['profile_image'] != 'default.jpg') {
+                    deleteProfileImage($current['profile_image']);
+                }
+                $profile_image = null; // This will make it use default
+            } elseif ($profile_image) {
+                // New image uploaded, delete old one
+                if ($current['profile_image'] && $current['profile_image'] != 'default.jpg') {
+                    deleteProfileImage($current['profile_image']);
+                }
+            } else {
+                // Keep existing image
+                $profile_image = $current['profile_image'];
             }
             
             $stmt = $pdo->prepare("UPDATE students SET student_id=?, first_name=?, last_name=?, email=?, phone=?, address=?, enrollment_date=?, profile_image=? WHERE id=?");
@@ -111,6 +124,35 @@ if (isset($_GET['delete'])) {
     $success = "Student deleted successfully!";
 }
 
+// Handle username change
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_username'])) {
+    $student_id = $_POST['student_id'];
+    $new_username = strtolower(trim($_POST['new_username']));
+    
+    // Get user_id from student
+    $stmt = $pdo->prepare("SELECT user_id FROM students WHERE id = ?");
+    $stmt->execute([$student_id]);
+    $student = $stmt->fetch();
+    
+    if ($student) {
+        // Check if username already exists
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? AND id != ?");
+        $stmt->execute([$new_username, $student['user_id']]);
+        
+        if ($stmt->fetch()) {
+            $error = "Username already exists! Please choose a different username.";
+        } elseif (strlen($new_username) < 3) {
+            $error = "Username must be at least 3 characters long!";
+        } elseif (!preg_match('/^[a-zA-Z0-9._-]+$/', $new_username)) {
+            $error = "Username can only contain letters, numbers, dots, underscores, and hyphens!";
+        } else {
+            $stmt = $pdo->prepare("UPDATE users SET username = ? WHERE id = ?");
+            $stmt->execute([$new_username, $student['user_id']]);
+            $success = "Username updated successfully!";
+        }
+    }
+}
+
 // Get all students
 $stmt = $pdo->query("SELECT s.*, u.username FROM students s JOIN users u ON s.user_id = u.id ORDER BY s.last_name, s.first_name");
 $students = $stmt->fetchAll();
@@ -142,6 +184,7 @@ $students = $stmt->fetchAll();
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             padding: 30px;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         h2 {
             color: #2d3748;
@@ -150,7 +193,7 @@ $students = $stmt->fetchAll();
         .btn {
             display: inline-block;
             padding: 10px 20px;
-            background: #667eea;
+            background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -159,23 +202,26 @@ $students = $stmt->fetchAll();
             font-size: 14px;
         }
         .btn:hover {
-            background: #5a67d8;
+            background: #fbbf24;
+            color: #1332bd;
         }
         .btn-danger {
             background: #e53e3e;
         }
         .btn-danger:hover {
             background: #c53030;
+            color: white;
         }
         .btn-success {
             background: #48bb78;
         }
         .btn-success:hover {
             background: #38a169;
+            color: #ffe96d;
         }
         .btn-sm {
-            padding: 5px 10px;
-            font-size: 12px;
+            padding: 20px 20px;
+            font-size: 14px;
         }
         table {
             width: 100%;
@@ -183,7 +229,7 @@ $students = $stmt->fetchAll();
             margin-top: 20px;
         }
         th {
-            background: #667eea;
+            background: #345dce;
             color: white;
             padding: 12px;
             text-align: left;
@@ -194,7 +240,7 @@ $students = $stmt->fetchAll();
             vertical-align: middle;
         }
         tr:hover {
-            background: #f7fafc;
+            background: hsla(54, 100%, 96%, 0.69);
         }
         .modal {
             display: none;
@@ -247,7 +293,7 @@ $students = $stmt->fetchAll();
         }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
         }
         .success {
             background: #c6f6d5;
@@ -287,7 +333,7 @@ $students = $stmt->fetchAll();
             height: 150px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid #667eea;
+            border: 4px solid linear-gradient(135deg, #305acf 0%, #2563eb 100%);
             margin: 10px auto;
             display: block;
         }
@@ -306,6 +352,7 @@ $students = $stmt->fetchAll();
         }
         .upload-btn:hover {
             background: #3182ce;
+            color: #ffe96d;
         }
         #profile_image {
             display: none;
@@ -327,6 +374,11 @@ $students = $stmt->fetchAll();
         }
         .remove-image:hover {
             background: #c53030;
+            color: white;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0px 20px rgba(255, 216, 110, 0.6);
         }
     </style>
 </head>
@@ -334,7 +386,7 @@ $students = $stmt->fetchAll();
     <div class="container">
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>👥 Manage Students</h2>
+                <h2>🎒 Manage Students</h2>
                 <button class="btn btn-success" onclick="openAddModal()">+ Add New Student</button>
             </div>
             
@@ -354,8 +406,8 @@ $students = $stmt->fetchAll();
                         <th>Name</th>
                         <th>Email</th>
                         <th>Phone</th>
-                        <th>Enrollment Date</th>
                         <th>Username</th>
+                        <th>Enrollment Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -364,16 +416,25 @@ $students = $stmt->fetchAll();
                     <tr>
                         <td>
                             <img src="<?php echo getProfileImageUrl($student['profile_image']); ?>" 
-                                 alt="Profile" 
-                                 class="profile-thumb"
-                                 onerror="this.src='uploads/profiles/default-avatar.png'">
+                                alt="Profile" 
+                                class="profile-thumb"
+                                data-name="<?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?>"
+                                onerror="this.src='uploads/profiles/default.jpg'">
                         </td>
                         <td><?php echo htmlspecialchars($student['student_id']); ?></td>
                         <td><?php echo htmlspecialchars($student['last_name'] . ', ' . $student['first_name']); ?></td>
                         <td><?php echo htmlspecialchars($student['email']); ?></td>
                         <td><?php echo htmlspecialchars($student['phone']); ?></td>
+                        <td>
+                            <span id="username-display-<?php echo $student['id']; ?>">
+                                <?php echo htmlspecialchars($student['username']); ?>
+                            </span>
+                            <button class="btn btn-sm" style="background: #4299e1; padding: 4px 8px; font-size: 11px; margin-left: 5px;" 
+                                    onclick="openUsernameModal(<?php echo $student['id']; ?>, '<?php echo htmlspecialchars($student['username']); ?>')">
+                                ✏️
+                            </button>
+                        </td>
                         <td><?php echo $student['enrollment_date']; ?></td>
-                        <td><?php echo htmlspecialchars($student['username']); ?></td>
                         <td class="action-buttons">
                             <button class="btn btn-sm" onclick='openEditModal(<?php echo json_encode($student); ?>)'>Edit</button>
                             <a href="?delete=<?php echo $student['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this student?')">Delete</a>
@@ -440,6 +501,33 @@ $students = $stmt->fetchAll();
                 </div>
                 
                 <button type="submit" class="btn btn-success">Save Student</button>
+            </form>
+        </div>
+    </div>
+    <!-- Username Change Modal -->
+    <div id="usernameModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close" onclick="closeUsernameModal()">&times;</span>
+            <h3>Change Username</h3>
+            
+            <form method="POST" action="" onsubmit="return submitUsernameChange()">
+                <input type="hidden" name="student_id" id="username_student_id">
+                <input type="hidden" name="change_username" value="1">
+                
+                <div class="form-group">
+                    <label>New Username:</label>
+                    <input type="text" name="new_username" id="new_username_input" 
+                        pattern="[a-zA-Z0-9._-]{3,}" 
+                        required>
+                    <small style="color: #718096; font-size: 11px; display: block; margin-top: 5px;">
+                        Username must be at least 3 characters. Only letters, numbers, dots, underscores, and hyphens allowed.
+                    </small>
+                </div>
+                
+                <div class="action-buttons" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn btn-danger" onclick="closeUsernameModal()">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Username</button>
+                </div>
             </form>
         </div>
     </div>
@@ -513,24 +601,47 @@ $students = $stmt->fetchAll();
         }
         
         function removeImage() {
-            document.getElementById('profilePreview').src = 'uploads/profiles/default-avatar.png';
+            document.getElementById('profilePreview').src = 'uploads/profiles/default.jpg';
             document.getElementById('profile_image').value = '';
-            document.getElementById('fileName').textContent = 'Image will be removed';
+            document.getElementById('fileName').textContent = 'Image will be removed (default image will be used)';
             document.querySelector('.remove-image').style.display = 'none';
             
-            // If editing, we need to mark for deletion
-            if (document.getElementById('action').value === 'edit') {
-                // You could add a hidden field to indicate image deletion
-                // For now, we'll just set a flag
-                if (!document.getElementById('delete_image')) {
-                    var input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'delete_image';
-                    input.id = 'delete_image';
-                    input.value = '1';
-                    document.querySelector('form').appendChild(input);
-                }
+            // Mark for image deletion
+            if (!document.getElementById('delete_image')) {
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'delete_image';
+                input.id = 'delete_image';
+                input.value = '1';
+                document.querySelector('form').appendChild(input);
             }
+        }
+
+        function openUsernameModal(studentId, currentUsername) {
+            document.getElementById('username_student_id').value = studentId;
+            document.getElementById('new_username_input').value = currentUsername;
+            document.getElementById('usernameModal').style.display = 'block';
+        }
+
+        function closeUsernameModal() {
+            document.getElementById('usernameModal').style.display = 'none';
+        }
+
+        function submitUsernameChange() {
+            var username = document.getElementById('new_username_input').value;
+            
+            if (username.length < 3) {
+                alert('Username must be at least 3 characters long!');
+                return false;
+            }
+            
+            var usernameRegex = /^[a-zA-Z0-9._-]+$/;
+            if (!usernameRegex.test(username)) {
+                alert('Username can only contain letters, numbers, dots, underscores, and hyphens!');
+                return false;
+            }
+            
+            return confirm('Are you sure you want to change this student\'s username to "' + username + '"?');
         }
         
         // Close modal when clicking outside
@@ -542,3 +653,5 @@ $students = $stmt->fetchAll();
     </script>
 </body>
 </html>
+
+<?php include 'includes/footer.php'; ?>

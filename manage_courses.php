@@ -91,6 +91,11 @@ $teachers = $stmt->fetchAll();
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             padding: 30px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0px 20px rgba(255, 216, 110, 0.6);
         }
         h2 {
             color: #2d3748;
@@ -99,7 +104,7 @@ $teachers = $stmt->fetchAll();
         .btn {
             display: inline-block;
             padding: 10px 20px;
-            background: #667eea;
+            background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -108,19 +113,22 @@ $teachers = $stmt->fetchAll();
             font-size: 14px;
         }
         .btn:hover {
-            background: #5a67d8;
+            background: #fbbf24;
+            color: #1332bd;
         }
         .btn-danger {
             background: #e53e3e;
         }
         .btn-danger:hover {
             background: #c53030;
+            color: white;
         }
         .btn-success {
             background: #48bb78;
         }
         .btn-success:hover {
             background: #38a169;
+            color: #ffe96d;
         }
         table {
             width: 100%;
@@ -128,7 +136,7 @@ $teachers = $stmt->fetchAll();
             margin-top: 20px;
         }
         th {
-            background: #667eea;
+            background: #345dce;
             color: white;
             padding: 12px;
             text-align: left;
@@ -138,7 +146,7 @@ $teachers = $stmt->fetchAll();
             border-bottom: 1px solid #e2e8f0;
         }
         tr:hover {
-            background: #f7fafc;
+            background: hsla(54, 100%, 96%, 0.69);
         }
         .modal {
             display: none;
@@ -198,6 +206,7 @@ $teachers = $stmt->fetchAll();
         }
         .enroll-btn:hover {
             background: #3182ce;
+            color: #ffe96d;
         }
     </style>
 </head>
@@ -205,8 +214,8 @@ $teachers = $stmt->fetchAll();
     <div class="container">
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>Manage Courses</h2>
-                <button class="btn btn-success" onclick="openAddModal()">Add New Course</button>
+                <h2>📒Manage Courses</h2>
+                <button class="btn btn-success" onclick="openAddModal()">+ Add New Course</button>
             </div>
             
             <?php if (isset($success)) echo "<div class='success'>$success</div>"; ?>
@@ -329,3 +338,5 @@ $teachers = $stmt->fetchAll();
     </script>
 </body>
 </html>
+
+<?php include 'includes/footer.php'; ?>

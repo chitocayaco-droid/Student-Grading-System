@@ -141,7 +141,7 @@ include 'includes/header.php';
 
 <style>
     .welcome-box {
-        background: linear-gradient(135deg, #2d4996 0%, #2563eb 100%);
+        background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
         color: white;
         padding: 40px;
         border-radius: 15px;
@@ -170,9 +170,22 @@ include 'includes/header.php';
         transition: transform 0.2s, box-shadow 0.2s;
         border: 1px solid #e2e8f0;
     }
+    .card1 {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        padding: 25px;
+        width: 800px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid #e2e8f0;
+    }
     .card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 0px 20px rgb(255, 216, 110);
+    }
+    .card1:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0px 20px rgb(255, 216, 110);
     }
     .card h3 {
         color: #2d3748;
@@ -184,7 +197,7 @@ include 'includes/header.php';
     .stat-number {
         font-size: 2.5em;
         font-weight: bold;
-        color: #667eea;
+        color: #ffb700;
         margin-bottom: 5px;
     }
     .stat-label {
@@ -196,7 +209,7 @@ include 'includes/header.php';
     .btn {
         display: inline-block;
         padding: 12px 24px;
-        background: #667eea;
+        background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
         color: white;
         text-decoration: none;
         border-radius: 8px;
@@ -207,16 +220,17 @@ include 'includes/header.php';
         cursor: pointer;
     }
     .btn:hover {
-        background: #5a67d8;
+        background: #fbbf24;
+        color: #1332bd;
     }
     .btn-outline {
-        background: transparent;
-        border: 2px solid #667eea;
-        color: #667eea;
+        background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
+        border: 2px solid linear-gradient(135deg, #305acf 0%, #2563eb 100%);
+        color: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
     }
     .btn-outline:hover {
-        background: #667eea;
-        color: white;
+        background: #fbbf24;
+        color: #1332bd;
     }
     .course-list {
         margin-top: 15px;
@@ -230,7 +244,7 @@ include 'includes/header.php';
     }
     .course-code {
         font-weight: bold;
-        color: #667eea;
+        color: #1232c0c4;
         font-size: 1.1em;
     }
     .course-grade {
@@ -288,7 +302,7 @@ include 'includes/header.php';
     }
     .percentage-fill {
         height: 100%;
-        background: #667eea;
+        background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
         border-radius: 3px;
         transition: width 0.3s;
     }
@@ -313,11 +327,14 @@ include 'includes/header.php';
         font-size: 0.8em;
         color: #718096;
     }
+    .special {
+        color: #fbbf24;
+    }
 </style>
 
 <div class="container">
     <div class="welcome-box">
-        <h1>Welcome back, <?php echo htmlspecialchars($full_name); ?>! 👋</h1>
+        <h1>Welcome back, <b class="special"><?php echo htmlspecialchars($full_name); ?></b>! 👋</h1>
         <p>You are logged in as <strong><?php echo ucfirst($role); ?></strong></p>
     </div>
     
@@ -423,7 +440,7 @@ include 'includes/header.php';
             </div>
             
             <!-- Recent Grades Card -->
-            <div class="card">
+            <div class="card1">
                 <h3>📝 Recent Grades</h3>
                 <?php if (count($recent_grades) > 0): ?>
                     <table class="grade-table">
@@ -507,6 +524,27 @@ include 'includes/header.php';
                 </p>
                 <a href="manage_passwords.php" class="btn">Manage Passwords</a>
             </div>
+
+            <!-- Simple Help Requests Card -->
+            <div class="card">
+                <h3>📧 Help Requests</h3>
+                <div class="stat-number" style="color: #eab308;">
+                    <?php 
+                    // Get pending count
+                    try {
+                        $stmt = $pdo->query("SELECT COUNT(*) FROM help_requests WHERE status = 'pending'");
+                        echo $stmt->fetchColumn();
+                    } catch (Exception $e) {
+                        echo "0";
+                    }
+                    ?>
+                </div>
+                <div class="stat-label">Pending Help Requests</div>
+                <p style="color: #718096; margin: 10px 0; font-size: 14px;">
+                    Users need assistance with their accounts.
+                </p>
+                <a href="view_help_requests.php" class="btn">View Requests</a>
+            </div>
         </div>
         
     <?php elseif ($role == 'teacher'): ?>
@@ -565,7 +603,6 @@ include 'includes/header.php';
                 <div style="display: grid; gap: 10px;">
                     <a href="grade_students.php" class="btn" style="text-align: center;">Enter New Grades</a>
                     <a href="my_courses.php" class="btn btn-outline" style="text-align: center;">View My Courses</a>
-                    <a href="#" class="btn btn-outline" style="text-align: center;" onclick="alert('Grade reports coming soon!')">Generate Reports</a>
                 </div>
             </div>
         </div>

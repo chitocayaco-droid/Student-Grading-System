@@ -75,6 +75,11 @@ $selected_course = isset($_GET['course_id']) ? $_GET['course_id'] : (isset($_POS
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             padding: 30px;
             margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0px 20px rgba(255, 216, 110, 0.6);
         }
         h2, h3 {
             color: #2d3748;
@@ -103,7 +108,7 @@ $selected_course = isset($_GET['course_id']) ? $_GET['course_id'] : (isset($_POS
             margin-top: 20px;
         }
         th {
-            background: #667eea;
+            background: #1232c0c4;
             color: white;
             padding: 12px;
             text-align: left;
@@ -114,7 +119,7 @@ $selected_course = isset($_GET['course_id']) ? $_GET['course_id'] : (isset($_POS
             vertical-align: top;
         }
         tr:hover {
-            background: #f7fafc;
+            background: hsla(54, 100%, 96%, 0.69);
         }
         .grade-form {
             background: #f7fafc;
@@ -128,7 +133,7 @@ $selected_course = isset($_GET['course_id']) ? $_GET['course_id'] : (isset($_POS
             color: #2d3748;
         }
         .btn {
-            background: #667eea;
+            background: #1232c0c4;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -139,19 +144,22 @@ $selected_course = isset($_GET['course_id']) ? $_GET['course_id'] : (isset($_POS
             display: inline-block;
         }
         .btn:hover {
-            background: #5a67d8;
+            background: #fbbf24;
+            color: #1332bd;
         }
         .btn-success {
             background: #48bb78;
         }
         .btn-success:hover {
             background: #38a169;
+            color: #ffe96d;
         }
         .btn-danger {
             background: #e53e3e;
         }
         .btn-danger:hover {
             background: #c53030;
+            color: white;
         }
         .btn-small {
             padding: 5px 10px;
@@ -194,7 +202,7 @@ $selected_course = isset($_GET['course_id']) ? $_GET['course_id'] : (isset($_POS
             font-size: 14px;
         }
         .grades-table th {
-            background: #4299e1;
+            background: #1232c0c4;
             font-size: 13px;
         }
         .toggle-form {
@@ -208,6 +216,7 @@ $selected_course = isset($_GET['course_id']) ? $_GET['course_id'] : (isset($_POS
         }
         .toggle-form:hover {
             background: #38a169;
+            color: #ffe96d;
         }
         .assignment-type {
             display: inline-block;
@@ -305,10 +314,10 @@ $selected_course = isset($_GET['course_id']) ? $_GET['course_id'] : (isset($_POS
                             <div>
                                 <span class="student-name"><?php echo htmlspecialchars($student['last_name'] . ', ' . $student['first_name']); ?></span>
                                 <span style="margin-left: 15px; color: #718096;">(<?php echo $student['student_number']; ?>)</span>
-                                <span style="margin-left: 15px;">Email: <?php echo $student['email']; ?></span>
+                                <span style="margin-left: 15px; margin-right: 15px;">Email: <?php echo $student['email']; ?></span>
+                                <span style="margin-right: 15px; font-size: 15px; font-weight: bold;">Average: <?php echo $average; ?>%</strong></span>
                             </div>
                             <div>
-                                <strong>Average: <?php echo $average; ?>%</strong>
                                 <button class="toggle-form" onclick="toggleGradeForm(<?php echo $student['enrollment_id']; ?>)">+ Add Grade</button>
                             </div>
                         </div>
@@ -431,3 +440,5 @@ $selected_course = isset($_GET['course_id']) ? $_GET['course_id'] : (isset($_POS
     </script>
 </body>
 </html>
+
+<?php include 'includes/footer.php'; ?>

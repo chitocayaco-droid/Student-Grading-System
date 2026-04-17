@@ -94,6 +94,81 @@ try {
     error_log("Profile error: " . $e->getMessage());
 }
 
+// Handle own username change
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_own_username'])) {
+    $new_username = strtolower(trim($_POST['new_username']));
+    
+    // Validate
+    if (strlen($new_username) < 3) {
+        $error = "Username must be at least 3 characters long!";
+    } elseif (!preg_match('/^[a-zA-Z0-9._-]+$/', $new_username)) {
+        $error = "Username can only contain letters, numbers, dots, underscores, and hyphens!";
+    } else {
+        // Check if username exists
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? AND id != ?");
+        $stmt->execute([$new_username, $user_id]);
+        if ($stmt->fetch()) {
+            $error = "Username already exists! Please choose a different username.";
+        } else {
+            $stmt = $pdo->prepare("UPDATE users SET username = ? WHERE id = ?");
+            $stmt->execute([$new_username, $user_id]);
+            $_SESSION['username'] = $new_username;
+            $success = "Username changed successfully to: " . htmlspecialchars($new_username);
+            $profile['username'] = $new_username;
+        }
+    }
+}
+
+// Handle reset profile image (add this BEFORE the update_profile code)
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reset_image'])) {
+    if ($role == 'student') {
+        // Get current profile image
+        $stmt = $pdo->prepare("SELECT profile_image FROM students WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $current = $stmt->fetch();
+        
+        // Delete old image if exists and not default
+        if ($current['profile_image'] && $current['profile_image'] != 'default.jpg') {
+            $old_file = "uploads/profiles/" . $current['profile_image'];
+            if (file_exists($old_file)) {
+                unlink($old_file);
+            }
+        }
+        
+        // Set to NULL (will show default)
+        $stmt = $pdo->prepare("UPDATE students SET profile_image = NULL WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        
+        $success = "Profile picture reset to default!";
+        
+        // Refresh profile data
+        $profile['profile_image'] = null;
+        
+    } else if ($role == 'teacher') {
+        // Get current profile image
+        $stmt = $pdo->prepare("SELECT profile_image FROM teachers WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $current = $stmt->fetch();
+        
+        // Delete old image if exists and not default
+        if ($current['profile_image'] && $current['profile_image'] != 'default.jpg') {
+            $old_file = "uploads/profiles/" . $current['profile_image'];
+            if (file_exists($old_file)) {
+                unlink($old_file);
+            }
+        }
+        
+        // Set to NULL (will show default)
+        $stmt = $pdo->prepare("UPDATE teachers SET profile_image = NULL WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        
+        $success = "Profile picture reset to default!";
+        
+        // Refresh profile data
+        $profile['profile_image'] = null;
+    }
+}
+
 // Handle profile update
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
     try {
@@ -193,9 +268,10 @@ function getGradeLetter($percentage) {
     return 'F';
 }
 
-// Get profile image URL safely
-$profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($profile['profile_image']) : 'uploads/profiles/default-avatar.png';
-?>
+// In the PHP section, update the profile_image_url:
+$profile_image_url = isset($profile['profile_image']) && !empty($profile['profile_image']) && file_exists("uploads/profiles/" . $profile['profile_image']) 
+    ? "uploads/profiles/" . $profile['profile_image'] 
+    : "uploads/profiles/default.jpg"; ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -223,9 +299,14 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .profile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0px 20px rgba(255, 216, 110, 0.6);
         }
         .profile-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
             padding: 40px;
             text-align: center;
             color: white;
@@ -269,6 +350,7 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
             font-size: 2.5em;
             font-weight: bold;
             margin-bottom: 5px;
+            color: #ffcd4d;
         }
         .profile-role {
             font-size: 1.2em;
@@ -333,12 +415,12 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
         }
         .stat-box:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0px 20px rgba(241, 206, 108, 0.62);
         }
         .stat-number {
             font-size: 2.5em;
             font-weight: bold;
-            color: #667eea;
+            color: #ffcd4d;
             line-height: 1;
         }
         .stat-label {
@@ -353,7 +435,7 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
         .btn {
             display: inline-block;
             padding: 12px 24px;
-            background: #667eea;
+            background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
             color: white;
             text-decoration: none;
             border-radius: 8px;
@@ -364,30 +446,33 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
             transition: all 0.3s;
         }
         .btn:hover {
-            background: #5a67d8;
+            background: #fbbf24;
+            color: #1332bd;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
         .btn-outline {
-            background: transparent;
-            border: 2px solid #667eea;
-            color: #667eea;
+            background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
+            border: 2px solid linear-gradient(135deg, #305acf 0%, #2563eb 100%);
+            color: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
         }
         .btn-outline:hover {
-            background: #667eea;
-            color: white;
+            background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
+            color: #ffe96d;
         }
         .btn-success {
             background: #48bb78;
         }
         .btn-success:hover {
             background: #38a169;
+            color: #ffe96d;
         }
         .btn-danger {
             background: #e53e3e;
         }
         .btn-danger:hover {
             background: #c53030;
+            color: white;
         }
         .logout {
             color: #e53e3e !important;
@@ -458,7 +543,7 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
         }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
         }
         .image-upload-container {
             text-align: center;
@@ -468,10 +553,17 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
             background: #4299e1;
             color: white;
             padding: 8px 16px;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
             display: inline-block;
             margin-top: 10px;
+            font-size: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0px 20px rgba(255, 216, 110, 0.6);
         }
         #edit_profile_image {
             display: none;
@@ -509,12 +601,14 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
         <div class="profile-card">
             <div class="profile-header">
                 <div class="profile-image-container">
+                <?php if ($role == 'student' || $role == 'teacher'): ?>   
                     <img src="<?php echo htmlspecialchars($profile_image_url); ?>" 
-                         alt="Profile" 
-                         class="profile-image"
-                         id="profileImageDisplay"
-                         onerror="this.src='uploads/profiles/default-avatar.png'">
+                        alt="Profile" 
+                        class="profile-image"
+                        data-name="<?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?>"
+                        onerror="this.src='uploads/profiles/default.jpg'">
                     <div class="edit-image-btn" onclick="openEditModal()">✎</div>
+                <?php endif; ?>
                 </div>
                 <div class="profile-name">
                     <?php 
@@ -712,8 +806,7 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
                                 <span class="info-label">Teachers:</span>
                                 <span class="info-value"><?php echo intval($stats['total_teachers'] ?? 0); ?></span>
                             </div>
-                        <?php endif; ?>
-                        
+                        <?php endif; ?>             
                         <div style="margin-top: 20px;">
                             <button class="btn btn-outline" onclick="openEditModal()" style="width: 100%;">✎ Edit Profile</button>
                         </div>
@@ -729,17 +822,33 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
             <span class="close" onclick="closeEditModal()">&times;</span>
             <h3>Edit Profile</h3>
             
-            <form method="POST" action="" enctype="multipart/form-data">
+            <!-- Form for updating profile info -->
+            <form method="POST" action="" enctype="multipart/form-data" id="editProfileForm">
                 <!-- Profile Image Upload -->
+                <?php if ($role == 'student' || $role == 'teacher'): ?>
                 <div class="image-upload-container">
                     <img id="editImagePreview" 
-                         src="<?php echo htmlspecialchars($profile_image_url); ?>" 
-                         alt="Profile Preview" 
-                         style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #667eea; margin-bottom: 10px;">
-                    <input type="file" id="edit_profile_image" name="profile_image" accept="image/*" onchange="previewEditImage(this)">
-                    <label for="edit_profile_image" class="upload-btn">Change Photo</label>
+                        src="<?php echo htmlspecialchars($profile_image_url); ?>" 
+                        alt="Profile Preview" 
+                        style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #667eea; margin-bottom: 10px;">
+                    
+                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <input type="file" id="edit_profile_image" name="profile_image" accept="image/*" onchange="previewEditImage(this)" style="display: none;">
+                        <label for="edit_profile_image" class="upload-btn" style="background: #3b82f6; cursor: pointer; padding: 8px 16px; border-radius: 5px; color: white; display: inline-block;">
+                            📷 Change Photo
+                        </label>
+                        <!-- Separate form for resetting image (only shown if custom image exists) -->
+                        <?php if (!empty($profile['profile_image']) && $profile['profile_image'] != 'default.jpg' && $profile['profile_image'] != 'default-avatar.png'): ?>
+                            <form method="POST" action="" onsubmit="return confirm('Are you sure you want to reset your profile picture to the default image?')">
+                                <input type="hidden" name="reset_image" value="1">
+                                <button type="submit" class="upload-btn" style="background: #f59e0b;">
+                                    🔄 Reset Profile Picture
+                                </button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
                 </div>
-                
+                <?php endif; ?>
                 <div class="form-group">
                     <label>Email:</label>
                     <input type="email" name="email" value="<?php echo htmlspecialchars($profile['email'] ?? ''); ?>" required>
@@ -762,7 +871,7 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
                     </div>
                 <?php endif; ?>
                 
-                <div class="action-buttons">
+                <div class="action-buttons" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
                     <button type="button" class="btn btn-danger" onclick="closeEditModal()">Cancel</button>
                     <button type="submit" name="update_profile" class="btn btn-success">Save Changes</button>
                 </div>
@@ -791,6 +900,73 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
+        function removeProfileImage() {
+            document.getElementById('editImagePreview').src = 'uploads/profiles/default.jpg';
+            document.getElementById('profileImageDisplay').src = 'uploads/profiles/default.jpg';
+            document.getElementById('edit_profile_image').value = '';
+        }
+        
+        // Reset profile image to default
+        function resetToDefault() {
+            if (confirm('Are you sure you want to reset your profile picture to the default image?')) {
+                // Show loading state
+                const resetBtn = event.target;
+                const originalText = resetBtn.innerHTML;
+                resetBtn.innerHTML = '⏳ Resetting...';
+                resetBtn.disabled = true;
+                
+                // Create form data
+                const formData = new FormData();
+                formData.append('reset_image', '1');
+                
+                // Send AJAX request
+                fetch('reset_profile_image.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the image preview
+                        document.getElementById('editImagePreview').src = 'uploads/profiles/default.jpg?' + new Date().getTime();
+                        document.getElementById('profileImageDisplay').src = 'uploads/profiles/default.jpg?' + new Date().getTime();
+                        
+                        // Show success message
+                        const statusDiv = document.getElementById('imageStatus');
+                        statusDiv.innerHTML = '✅ Profile picture reset to default!';
+                        statusDiv.style.color = '#10b981';
+                        
+                        // Hide the reset button
+                        resetBtn.style.display = 'none';
+                        
+                        // Add hidden field to form
+                        if (!document.getElementById('reset_image')) {
+                            var input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'reset_image';
+                            input.id = 'reset_image';
+                            input.value = '1';
+                            document.getElementById('editProfileForm').appendChild(input);
+                        }
+                        
+                        setTimeout(() => {
+                            statusDiv.innerHTML = '';
+                        }, 3000);
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                })
+                .finally(() => {
+                    resetBtn.innerHTML = originalText;
+                    resetBtn.disabled = false;
+                });
+            }
+        }
         
         // Close modal when clicking outside
         window.onclick = function(event) {
@@ -809,3 +985,5 @@ $profile_image_url = isset($profile['profile_image']) ? getProfileImageUrl($prof
     </script>
 </body>
 </html>
+
+<?php include 'includes/footer.php'; ?>

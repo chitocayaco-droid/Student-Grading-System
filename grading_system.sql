@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 12, 2026 at 12:58 AM
+-- Generation Time: Apr 17, 2026 at 05:43 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -42,8 +42,7 @@ CREATE TABLE `courses` (
 
 INSERT INTO `courses` (`id`, `course_code`, `course_name`, `credits`, `teacher_id`, `description`) VALUES
 (1, 'CS101', 'Introduction to Programming', 3, 1, 'Basic programming concepts'),
-(2, 'CS102', 'Data Structures', 3, 1, 'Advanced data structures and algorithms'),
-(3, 'CS103', 'Music', 3, 3, 'Very good');
+(2, 'CS102', 'Data Structures', 3, 1, 'Advanced data structures and algorithms');
 
 -- --------------------------------------------------------
 
@@ -65,8 +64,8 @@ CREATE TABLE `enrollments` (
 --
 
 INSERT INTO `enrollments` (`id`, `student_id`, `course_id`, `enrollment_date`, `semester`, `year`) VALUES
-(1, 1, 1, '2026-03-10', 'Fall', 2024),
-(2, 1, 2, '2026-03-10', 'Fall', 2024);
+(2, 1, 2, '2026-03-03', 'Fall', 2024),
+(3, 1, 1, '2026-04-17', 'Spring', 2026);
 
 -- --------------------------------------------------------
 
@@ -84,6 +83,22 @@ CREATE TABLE `grades` (
   `weight` decimal(3,2) DEFAULT 1.00,
   `date_given` date DEFAULT NULL,
   `comments` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `help_requests`
+--
+
+CREATE TABLE `help_requests` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `message` text NOT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `status` enum('pending','read','replied') DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -110,7 +125,7 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`id`, `user_id`, `student_id`, `first_name`, `last_name`, `email`, `phone`, `address`, `profile_image`, `enrollment_date`) VALUES
-(1, 3, 'STU001', 'Alice', 'Johnson', 'alice@email.com', NULL, NULL, NULL, '2024-01-15');
+(1, 3, 'STU001', 'Alice', 'Johnson', 'alice.johnson@email.com', '', '', NULL, '2024-01-15');
 
 -- --------------------------------------------------------
 
@@ -135,8 +150,7 @@ CREATE TABLE `teachers` (
 --
 
 INSERT INTO `teachers` (`id`, `user_id`, `teacher_id`, `first_name`, `last_name`, `email`, `phone`, `department`, `profile_image`) VALUES
-(1, 2, 'TCH001', 'John', 'Smith', 'john.smith@email.com', NULL, 'Computer Science', NULL),
-(3, 6, 'TCH02', 'Adriel', 'Johannesen', 'adriel_johannesen@amdore.com', '376927667121565828', 'Music', NULL);
+(1, 2, 'TCH001', 'John', 'Smith', 'john.smith@email.com', '', 'Computer Science', NULL);
 
 -- --------------------------------------------------------
 
@@ -158,10 +172,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `full_name`, `role`, `created_at`) VALUES
-(1, 'admin', '0192023a7bbd73250516f069df18b500', 'System Administrator', 'admin', '2026-03-10 01:09:30'),
-(2, 'teacher1', 'a426dcf72ba25d046591f81a5495eab7', 'John Smith', 'teacher', '2026-03-10 01:09:30'),
-(3, 'student1', 'ad6a280417a0f533d8b670c61667e1a0', 'Alice Johnson', 'student', '2026-03-10 01:09:30'),
-(6, 'adriel.johannesen', 'f913aee6eb53ad175eca75e7116e3d5d', 'Adriel Johannesen', 'teacher', '2026-03-10 01:29:31');
+(1, 'admin', '0192023a7bbd73250516f069df18b500', 'System Administrator', 'admin', '2026-03-03 12:09:06'),
+(2, 'teacher1', 'a426dcf72ba25d046591f81a5495eab7', 'John Smith', 'teacher', '2026-03-03 12:09:06'),
+(3, 'student1', 'ad6a280417a0f533d8b670c61667e1a0', 'Alice Johnson', 'student', '2026-03-03 12:09:06');
 
 --
 -- Indexes for dumped tables
@@ -189,6 +202,12 @@ ALTER TABLE `enrollments`
 ALTER TABLE `grades`
   ADD PRIMARY KEY (`id`),
   ADD KEY `enrollment_id` (`enrollment_id`);
+
+--
+-- Indexes for table `help_requests`
+--
+ALTER TABLE `help_requests`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `students`
@@ -221,37 +240,43 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `courses`
 --
 ALTER TABLE `courses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `enrollments`
 --
 ALTER TABLE `enrollments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `grades`
 --
 ALTER TABLE `grades`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `help_requests`
+--
+ALTER TABLE `help_requests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `teachers`
 --
 ALTER TABLE `teachers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

@@ -107,7 +107,7 @@ $stmt = $pdo->prepare("
     ORDER BY year DESC, 
              CASE semester 
                 WHEN 'Spring' THEN 1 
-                WHEN 'Summer' THEN 2 
+                WHEN 'Winter' THEN 2 
                 WHEN 'Fall' THEN 3 
              END
 ");
@@ -142,6 +142,11 @@ $existing_semesters = $stmt->fetchAll();
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             padding: 30px;
             margin-bottom: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0px 20px rgba(255, 216, 110, 0.6);
         }
         h2 {
             color: #2d3748;
@@ -165,7 +170,7 @@ $existing_semesters = $stmt->fetchAll();
         .btn {
             display: inline-block;
             padding: 10px 20px;
-            background: #667eea;
+            background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -175,19 +180,22 @@ $existing_semesters = $stmt->fetchAll();
             margin-right: 10px;
         }
         .btn:hover {
-            background: #5a67d8;
+            background: #fbbf24;
+            color: #1332bd;
         }
         .btn-danger {
             background: #e53e3e;
         }
         .btn-danger:hover {
             background: #c53030;
+            color: white;
         }
         .btn-success {
             background: #48bb78;
         }
         .btn-success:hover {
             background: #38a169;
+            color: #ffe96d;
         }
         .btn-sm {
             padding: 5px 10px;
@@ -199,7 +207,7 @@ $existing_semesters = $stmt->fetchAll();
             margin-top: 20px;
         }
         th {
-            background: #667eea;
+            background: #345dce;
             color: white;
             padding: 12px;
             text-align: left;
@@ -209,7 +217,7 @@ $existing_semesters = $stmt->fetchAll();
             border-bottom: 1px solid #e2e8f0;
         }
         tr:hover {
-            background: #f7fafc;
+            background: hsla(54, 100%, 96%, 0.69);
         }
         .form-group {
             margin-bottom: 15px;
@@ -229,7 +237,7 @@ $existing_semesters = $stmt->fetchAll();
         }
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         .success {
@@ -254,7 +262,7 @@ $existing_semesters = $stmt->fetchAll();
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
-            color: #667eea;
+            color: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
             text-decoration: none;
         }
         .back-link:hover {
@@ -276,7 +284,7 @@ $existing_semesters = $stmt->fetchAll();
         .stat-value {
             font-size: 24px;
             font-weight: bold;
-            color: #667eea;
+            color: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
         }
         .stat-label {
             color: #718096;
@@ -434,7 +442,7 @@ $existing_semesters = $stmt->fetchAll();
                                 <select name="semester" id="semester" required>
                                     <option value="Fall">Fall</option>
                                     <option value="Spring">Spring</option>
-                                    <option value="Summer">Summer</option>
+                                    <option value="Winter">Winter</option>
                                 </select>
                             </div>
                             
@@ -460,3 +468,5 @@ $existing_semesters = $stmt->fetchAll();
     </div>
 </body>
 </html>
+
+<?php include 'includes/footer.php'; ?>

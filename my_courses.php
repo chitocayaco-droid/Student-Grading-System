@@ -80,7 +80,7 @@ $courses = $stmt->fetchAll();
         .course-code {
             font-size: 1.2em;
             font-weight: bold;
-            color: #667eea;
+            color: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
             margin-bottom: 5px;
         }
         .course-name {
@@ -94,7 +94,7 @@ $courses = $stmt->fetchAll();
         .btn {
             display: inline-block;
             padding: 8px 16px;
-            background: #667eea;
+            background: linear-gradient(135deg, #305acf 0%, #2563eb 100%);
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -103,13 +103,15 @@ $courses = $stmt->fetchAll();
             font-size: 14px;
         }
         .btn:hover {
-            background: #5a67d8;
+            background: #fbbf24;
+            color: #1332bd;
         }
         .btn-grade {
             background: #48bb78;
         }
         .btn-grade:hover {
             background: #38a169;
+            color: white;
         }
         .logout {
             color: #e53e3e !important;
@@ -153,3 +155,5 @@ $courses = $stmt->fetchAll();
     </div>
 </body>
 </html>
+
+<?php include 'includes/footer.php'; ?>
