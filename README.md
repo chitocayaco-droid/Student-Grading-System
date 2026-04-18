@@ -90,3 +90,5 @@ admin@bethel.edu
 ---
 
 Version 2.0 | April 2025
+
+Created by Aleksandar Amadore, Chito Cayaco, Brandon Banzon, and Jethro Balbaboco
