@@ -22,16 +22,6 @@ A comprehensive web-based student grading management system for Bethel Internati
 
 ---
 
-## 🛠️ Technology Stack
-- PHP 7.4+  
-- MySQL  
-- HTML5  
-- CSS3  
-- JavaScript  
-- XAMPP/WAMP recommended  
-
----
-
 ## 📋 Prerequisites
 - XAMPP / WAMP / MAMP installed  
 - PHP 7.4 or higher  
