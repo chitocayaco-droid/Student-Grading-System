@@ -1,120 +1,102 @@
-This is a student grading system thing.
+# 📚 Bethel GradeMaster - Student Grading System
 
-Important to make it work:
+A comprehensive web-based student grading management system for Bethel International School.
 
-COPY AND PASTE THIS TO SQL FOR DATABASE (LINES 7-104: +NEW) (LINES 108-115, 119-120: INSIDE GRADING SYSTEM DATABASE)
+---
 
--- Create database
-CREATE DATABASE IF NOT EXISTS grading_system;
-USE grading_system;
+## 🎯 Features
 
--- Users table
-CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    full_name VARCHAR(100) NOT NULL,
-    role ENUM('admin', 'teacher', 'student') NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+### 👑 Administrator Functions
+- Manage students, teachers, and courses  
+- Reset passwords and change usernames  
+- View help requests from users  
+- Enroll students in courses  
 
--- Students table
-CREATE TABLE students (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT UNIQUE,
-    student_id VARCHAR(20) UNIQUE NOT NULL,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(100),
-    phone VARCHAR(20),
-    address TEXT,
-    enrollment_date DATE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-);
+### 👨‍🏫 Teacher Functions  
+- Enter and manage student grades  
+- View class rosters and student performance  
 
--- Teachers table
-CREATE TABLE teachers (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT UNIQUE,
-    teacher_id VARCHAR(20) UNIQUE NOT NULL,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(100),
-    phone VARCHAR(20),
-    department VARCHAR(100),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-);
+### 👨‍🎓 Student Functions
+- View personal grades and GPA  
+- Update profile information  
 
--- Courses table
-CREATE TABLE courses (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    course_code VARCHAR(20) UNIQUE NOT NULL,
-    course_name VARCHAR(100) NOT NULL,
-    credits INT NOT NULL,
-    teacher_id INT,
-    description TEXT,
-    FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE SET NULL
-);
+---
 
--- Enrollments table
-CREATE TABLE enrollments (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    student_id INT NOT NULL,
-    course_id INT NOT NULL,
-    enrollment_date DATE DEFAULT CURRENT_DATE,
-    semester VARCHAR(20),
-    year INT,
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
-    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_enrollment (student_id, course_id, semester, year)
-);
+## 🛠️ Technology Stack
+- PHP 7.4+  
+- MySQL  
+- HTML5  
+- CSS3  
+- JavaScript  
+- XAMPP/WAMP recommended  
 
--- Grades table
-CREATE TABLE grades (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    enrollment_id INT NOT NULL,
-    assignment_name VARCHAR(100),
-    assignment_type ENUM('quiz', 'midterm', 'final', 'project', 'homework') NOT NULL,
-    score DECIMAL(5,2) NOT NULL,
-    max_score DECIMAL(5,2) NOT NULL,
-    weight DECIMAL(3,2) DEFAULT 1.00,
-    date_given DATE,
-    comments TEXT,
-    FOREIGN KEY (enrollment_id) REFERENCES enrollments(id) ON DELETE CASCADE
-);
+---
 
--- Insert sample data
-INSERT INTO users (username, password, full_name, role) VALUES
-('admin', MD5('admin123'), 'System Administrator', 'admin'),
-('teacher1', MD5('teacher123'), 'John Smith', 'teacher'),
-('student1', MD5('student123'), 'Alice Johnson', 'student');
+## 📋 Prerequisites
+- XAMPP / WAMP / MAMP installed  
+- PHP 7.4 or higher  
+- MySQL 5.7 or higher  
 
-INSERT INTO students (user_id, student_id, first_name, last_name, email, enrollment_date) VALUES
-(3, 'STU001', 'Alice', 'Johnson', 'alice@email.com', '2024-01-15');
+---
 
-INSERT INTO teachers (user_id, teacher_id, first_name, last_name, email, department) VALUES
-(2, 'TCH001', 'John', 'Smith', 'john.smith@email.com', 'Computer Science');
+## 🚀 Installation Guide
 
-INSERT INTO courses (course_code, course_name, credits, teacher_id, description) VALUES
-('CS101', 'Introduction to Programming', 3, 1, 'Basic programming concepts'),
-('CS102', 'Data Structures', 3, 1, 'Advanced data structures and algorithms');
+### Step 1: Install XAMPP
+Download from: https://www.apachefriends.org/
 
-INSERT INTO enrollments (student_id, course_id, semester, year) VALUES
-(1, 1, 'Fall', 2024),
-(1, 2, 'Fall', 2024);
+### Step 2: Start Services
+Start Apache and MySQL
 
-—--------------------- (inside grading-system)
+### Step 3: Copy Project Files
+Copy to:
+C:\xampp\htdocs\grading_system\
 
--- Add profile_image column to students table
-ALTER TABLE students ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL AFTER address;
+### Step 4: Create Database
+Go to http://localhost/phpmyadmin and create:
+grading_system
 
--- Add profile_image column to teachers table
-ALTER TABLE teachers ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL AFTER department;
+### Step 5: Import SQL
+Run the SQL script provided in the documentation.
 
--- Create uploads directory structure (you'll need to create this folder manually)
--- The code will create these folders automatically if they don't exist
+### Step 6: Create Required Folders
+uploads/
+uploads/profiles/
+assets/
+assets/css/
+includes/
 
-—----------
+### Step 7: Add Default Profile Image
+uploads/profiles/default.jpg
 
-ALTER TABLE students ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL AFTER address;
-ALTER TABLE teachers ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL AFTER department;
+### Step 8: Configure Database
+Edit config/database.php
+
+### Step 9: Run System
+http://localhost/grading_system/
+
+---
+
+## 🔑 Default Login Credentials
+
+| Role    | Username  | Password    |
+|--------|----------|-------------|
+| Admin  | admin     | admin123    |
+| Teacher| teacher1  | teacher123  |
+| Student| student1  | student123  |
+
+---
+
+## 🐛 Troubleshooting
+
+- White screen → Check services  
+- Images not loading → Check uploads folder  
+- Login issues → Use default credentials  
+
+---
+
+## 📞 Support
+admin@bethel.edu
+
+---
+
+Version 2.0 | April 2025
